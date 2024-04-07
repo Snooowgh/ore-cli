@@ -21,8 +21,8 @@ use crate::Miner;
 
 const RPC_RETRIES: usize = 0;
 const SIMULATION_RETRIES: usize = 4;
-const GATEWAY_RETRIES: usize = 0;
-const CONFIRM_RETRIES: usize = 0;
+const GATEWAY_RETRIES: usize = 1;
+const CONFIRM_RETRIES: usize = 1;
 
 impl Miner {
     pub async fn send_and_confirm(
