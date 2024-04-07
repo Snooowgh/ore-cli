@@ -33,17 +33,17 @@ impl Miner {
         // Start mining loop
         loop {
             // Fetch account state
-            let balance = self.get_ore_display_balance().await;
+//             let balance = self.get_ore_display_balance().await;
             let treasury = get_treasury(self.cluster.clone()).await;
             let proof = get_proof(self.cluster.clone(), signer.pubkey()).await;
-            let rewards =
-                (proof.claimable_rewards as f64) / (10f64.powf(ore::TOKEN_DECIMALS as f64));
-            let reward_rate =
-                (treasury.reward_rate as f64) / (10f64.powf(ore::TOKEN_DECIMALS as f64));
+            // let rewards =
+            //     (proof.claimable_rewards as f64) / (10f64.powf(ore::TOKEN_DECIMALS as f64));
+            // let reward_rate =
+            //     (treasury.reward_rate as f64) / (10f64.powf(ore::TOKEN_DECIMALS as f64));
             stdout.write_all(b"\x1b[2J\x1b[3J\x1b[H").ok();
-            println!("Balance: {} ORE", balance);
-            println!("Claimable: {} ORE", rewards);
-            println!("Reward rate: {} ORE", reward_rate);
+//             println!("Balance: {} ORE", balance);
+//             println!("Claimable: {} ORE", rewards);
+            // println!("Reward rate: {} ORE", reward_rate);
 
             // Escape sequence that clears the screen and the scrollback buffer
             println!("\nMining for a valid hash...");
@@ -53,7 +53,8 @@ impl Miner {
             // Submit mine tx.
             // Use busses randomly so on each epoch, transactions don't pile on the same busses
             println!("\n\nSubmitting hash for validation...");
-            loop {
+            // Retry 3 times
+            for _ in 0..3 {
                 // Reset epoch, if needed
                 let treasury = get_treasury(self.cluster.clone()).await;
                 let clock = get_clock_account(self.cluster.clone()).await;
@@ -98,6 +99,7 @@ impl Miner {
                         // TODO
                     }
                 }
+
             }
         }
     }
