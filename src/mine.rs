@@ -54,7 +54,13 @@ impl Miner {
             // Use busses randomly so on each epoch, transactions don't pile on the same busses
             println!("\n\nSubmitting hash for validation...");
             // Retry 3 times
-            for _ in 0..10 {
+            'submit: for _ in 0..10 {
+                // Double check we're submitting for the right challenge
+                let proof_ = get_proof(self.cluster.clone(), signer.pubkey()).await;
+                if proof_.hash.ne(&proof.hash) {
+                    println!("Hash already validated! An earlier transaction must have landed.");
+                    break 'submit;
+                }
                 // Reset epoch, if needed
                 let treasury = get_treasury(self.cluster.clone()).await;
                 let clock = get_clock_account(self.cluster.clone()).await;
