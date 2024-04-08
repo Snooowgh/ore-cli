@@ -21,11 +21,11 @@ use crate::Miner;
 
 const RPC_RETRIES: usize = 0;
 const SIMULATION_RETRIES: usize = 0;
-const GATEWAY_RETRIES: usize = 1;
-const CONFIRM_RETRIES: usize = 3;
+const GATEWAY_RETRIES: usize = 2;
+const CONFIRM_RETRIES: usize = 4;
 
 
-const CONFIRM_DELAY: u64 = 2000;
+const CONFIRM_DELAY: u64 = 5000;
 const GATEWAY_DELAY: u64 = 2000;
 
 impl Miner {
