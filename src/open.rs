@@ -22,7 +22,10 @@ impl Miner {
         //     .ok();
         let tips = Arc::new(RwLock::new(JitoTips::default()));
         subscribe_jito_tips(tips.clone()).await;
-        self.send_and_confirm_by_jito(&[ix], ComputeBudget::Dynamic, tips.clone())
+        let tips = *tips.read().await;
+        let mut tip = self.priority_fee;
+        tip = 20000.max(tips.p50() + 1);
+        self.send_and_confirm_by_jito(&[ix], ComputeBudget::Dynamic, tip)
             .await;
     }
 }

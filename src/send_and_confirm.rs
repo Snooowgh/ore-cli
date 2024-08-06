@@ -189,11 +189,9 @@ impl Miner {
         &self,
         ixs: &[Instruction],
         compute_budget: ComputeBudget,
-        tips: Arc<RwLock<JitoTips>>,
+        tip: u64,
     ) {
-        let tips = *tips.read().await;
-        let mut tip = self.priority_fee;
-        tip = 20000.max(tips.p50() + 1);
+
         // if tips.p50() > 0 {
         //
         // }

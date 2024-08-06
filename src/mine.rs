@@ -36,7 +36,7 @@ impl Miner {
         // Register, if needed.
         let signer = self.signer();
         self.open().await;
-        let min_difficulty:u32 = 10;
+        let min_difficulty: u32 = 10;
 
         // Check num threads
         self.check_num_cores(args.threads);
@@ -60,13 +60,13 @@ impl Miner {
 
             // Run drillx
             let config = get_config(&self.rpc_client).await;
-            let solution = Self::find_hash_par(
+            let (solution, best_difficulty) = Self::find_hash_par(
                 proof,
                 cutoff_time,
                 args.threads,
                 min_difficulty,
             )
-            .await;
+                .await;
 
             // Submit most difficult hash
             let mut compute_budget = 500_000;
@@ -85,7 +85,19 @@ impl Miner {
             // self.send_and_confirm(&ixs, ComputeBudget::Fixed(compute_budget), false)
             //     .await
             //     .ok();
-            self.send_and_confirm_by_jito(&ixs, ComputeBudget::Fixed(compute_budget), tips.clone())
+            let tips = *tips.read().await;
+            let mut tip = self.priority_fee;
+            if (best_difficulty >= 22) {
+                tip = 100000.max(tips.p50() + 1);
+            } else if (best_difficulty >= 20) {
+                tip = 60000.max(tips.p50() + 1);
+            } else if (best_difficulty >= 16) {
+                tip = 35000.max(tips.p50() + 1);
+            } else {
+                tip = 20000.max(tips.p50() + 1);
+            }
+
+            self.send_and_confirm_by_jito(&ixs, ComputeBudget::Fixed(compute_budget), tip)
                 .await;
         }
     }
@@ -95,7 +107,7 @@ impl Miner {
         cutoff_time: u64,
         threads: u64,
         min_difficulty: u32,
-    ) -> Solution {
+    ) -> (Solution, u32) {
         // Dispatch job to each thread
         let progress_bar = Arc::new(spinner::new_progress_bar());
         progress_bar.set_message("Mining...");
@@ -176,7 +188,7 @@ impl Miner {
             best_difficulty
         ));
 
-        Solution::new(best_hash.d, best_nonce.to_le_bytes())
+        (Solution::new(best_hash.d, best_nonce.to_le_bytes()), best_difficulty)
     }
 
     pub fn check_num_cores(&self, threads: u64) {
