@@ -62,7 +62,7 @@ impl Miner {
                 proof,
                 cutoff_time,
                 args.threads,
-                10,
+                15,
             )
             .await;
 
