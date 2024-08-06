@@ -1,6 +1,8 @@
+use std::sync::Arc;
 use solana_sdk::signature::Signer;
-
+use tokio::sync::RwLock;
 use crate::{send_and_confirm::ComputeBudget, utils::proof_pubkey, Miner};
+use crate::jito::{JitoTips, subscribe_jito_tips};
 
 impl Miner {
     pub async fn open(&self) {
@@ -14,8 +16,13 @@ impl Miner {
         // Sign and send transaction.
         println!("Generating challenge...");
         let ix = ore_api::instruction::open(signer.pubkey(), signer.pubkey(), signer.pubkey());
-        self.send_and_confirm(&[ix], ComputeBudget::Dynamic, false)
-            .await
-            .ok();
+
+        // self.send_and_confirm(&[ix], ComputeBudget::Dynamic, false)
+        //     .await
+        //     .ok();
+        let tips = Arc::new(RwLock::new(JitoTips::default()));
+        subscribe_jito_tips(tips.clone()).await;
+        self.send_and_confirm_by_jito(&[ix], ComputeBudget::Dynamic, tips.clone())
+            .await;
     }
 }
