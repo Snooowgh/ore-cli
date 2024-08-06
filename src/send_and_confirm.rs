@@ -194,7 +194,7 @@ impl Miner {
         let tips = *tips.read().await;
         let mut tip = self.priority_fee;
         if tips.p50() > 0 {
-            tip = 30000.max(tips.p50() + 1);
+            tip = 1.max(tips.p50() + 1);
         }
 
         let signer = self.signer();
