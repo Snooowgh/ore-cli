@@ -88,3 +88,39 @@ pub fn proof_pubkey(authority: Pubkey) -> Pubkey {
 pub fn treasury_tokens_pubkey() -> Pubkey {
     get_associated_token_address(&TREASURY_ADDRESS, &MINT_ADDRESS)
 }
+
+
+#[macro_export]
+macro_rules! format_duration {
+    ($d: expr) => {
+        format_args!("{:.1}s", $d.as_secs_f64())
+    };
+}
+
+#[macro_export]
+macro_rules! format_reward {
+    ($r: expr) => {
+        format_args!("{:.}", utils::ore_ui_amount($r))
+    };
+}
+
+#[macro_export]
+macro_rules! wait_return {
+    ($duration: expr) => {{
+        tokio::time::sleep(std::time::Duration::from_millis($duration)).await;
+        return;
+    }};
+
+    ($duration: expr, $return: expr) => {{
+        tokio::time::sleep(std::time::Duration::from_millis($duration)).await;
+        return $return;
+    }};
+}
+
+#[macro_export]
+macro_rules! wait_continue {
+    ($duration: expr) => {{
+        tokio::time::sleep(std::time::Duration::from_millis($duration)).await;
+        continue;
+    }};
+}

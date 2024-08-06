@@ -1,5 +1,4 @@
 use std::{sync::Arc, time::Instant};
-
 use colored::*;
 use drillx::{
     equix::{self},
@@ -13,7 +12,7 @@ use rand::Rng;
 use solana_program::pubkey::Pubkey;
 use solana_rpc_client::spinner;
 use solana_sdk::signer::Signer;
-
+use tokio::sync::RwLock;
 use crate::{
     args::MineArgs,
     send_and_confirm::ComputeBudget,
@@ -21,6 +20,15 @@ use crate::{
     Miner,
 };
 
+use crate::{
+    constant,
+    constant::FEE_PER_SIGNER,
+    format_duration,
+    format_reward,
+    jito,
+    jito::{subscribe_jito_tips, JitoTips},
+    utils,
+};
 impl Miner {
     pub async fn mine(&self, args: MineArgs) {
         // Register, if needed.
@@ -30,6 +38,8 @@ impl Miner {
         // Check num threads
         self.check_num_cores(args.threads);
 
+        let tips = Arc::new(RwLock::new(JitoTips::default()));
+        subscribe_jito_tips(tips.clone()).await;
         // Start mining loop
         loop {
             // Fetch proof
@@ -90,7 +100,7 @@ impl Miner {
                         let timer = Instant::now();
                         let mut nonce = u64::MAX.saturating_div(threads).saturating_mul(i);
                         let mut best_nonce = nonce;
-                        let mut best_difficulty = 0;
+                        let mut best_difficulty = 15;
                         let mut best_hash = Hash::default();
                         loop {
                             // Create hash
