@@ -1,4 +1,8 @@
 use std::io::Read;
+use std::{collections::HashMap, env, path::PathBuf};
+
+use solana_sdk::{commitment_config::CommitmentConfig, signature::Signature};
+use solana_transaction_status::TransactionStatus;
 
 use cached::proc_macro::cached;
 use ore_api::{
@@ -123,4 +127,21 @@ macro_rules! wait_continue {
         tokio::time::sleep(std::time::Duration::from_millis($duration)).await;
         continue;
     }};
+}
+
+
+pub fn find_landed_txs(signatures: &[Signature], statuses: Vec<Option<TransactionStatus>>) -> Vec<Signature> {
+    let landed_tx = statuses
+        .into_iter()
+        .zip(signatures.iter())
+        .filter_map(|(status, sig)| {
+            if status?.satisfies_commitment(CommitmentConfig::confirmed()) {
+                Some(*sig)
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+
+    landed_tx
 }
