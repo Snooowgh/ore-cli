@@ -80,7 +80,7 @@ impl Miner {
 
 
 
-            self.send_and_confirm(&ixs, ComputeBudget::Fixed(compute_budget), false, tips)
+            self.send_and_confirm(&ixs, ComputeBudget::Fixed(compute_budget), false)
                 .await
                 .ok();
         }

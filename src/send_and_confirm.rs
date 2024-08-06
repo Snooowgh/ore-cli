@@ -44,7 +44,7 @@ impl Miner {
         ixs: &[Instruction],
         compute_budget: ComputeBudget,
         skip_confirm: bool,
-        tips: Arc<RwLock<JitoTips>>
+        // tips: Arc<RwLock<JitoTips>>
     ) -> ClientResult<Signature> {
         let progress_bar = spinner::new_progress_bar();
         let signer = self.signer();
