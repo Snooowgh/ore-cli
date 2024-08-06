@@ -36,7 +36,7 @@ impl Miner {
         // Register, if needed.
         let signer = self.signer();
         self.open().await;
-        let min_difficulty:u32 = 15;
+        let min_difficulty:u32 = 11;
 
         // Check num threads
         self.check_num_cores(args.threads);
