@@ -45,8 +45,10 @@ impl Miner {
             // Fetch proof
             let proof = get_proof_with_authority(&self.rpc_client, signer.pubkey()).await;
             println!(
-                "\nStake balance: {} ORE",
-                amount_u64_to_string(proof.balance)
+                "\n{} Stake balance: {} ORE {} USD",
+                signer.pubkey().to_string(),
+                amount_u64_to_string(proof.balance),
+                proof.balance * 800
             );
 
             // Calc cutoff time
@@ -58,7 +60,7 @@ impl Miner {
                 proof,
                 cutoff_time,
                 args.threads,
-                config.min_difficulty as u32,
+                15,
             )
             .await;
 
@@ -75,7 +77,10 @@ impl Miner {
                 find_bus(),
                 solution,
             ));
-            self.send_and_confirm(&ixs, ComputeBudget::Fixed(compute_budget), false)
+
+
+
+            self.send_and_confirm(&ixs, ComputeBudget::Fixed(compute_budget), false, tips)
                 .await
                 .ok();
         }
@@ -100,7 +105,7 @@ impl Miner {
                         let timer = Instant::now();
                         let mut nonce = u64::MAX.saturating_div(threads).saturating_mul(i);
                         let mut best_nonce = nonce;
-                        let mut best_difficulty = 15;
+                        let mut best_difficulty = 0;
                         let mut best_hash = Hash::default();
                         loop {
                             // Create hash
