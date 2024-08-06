@@ -7,7 +7,10 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a93c9634-e3b7-4ad1-b6d6-789bd74f5e76" name="Changes" comment="debug" />
+    <list default="true" id="a93c9634-e3b7-4ad1-b6d6-789bd74f5e76" name="Changes" comment="debug">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/send_and_confirm.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/send_and_confirm.rs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +19,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Snooowgh"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Snooowgh/ore-cli.git",
+    "accountId": "df6171f8-96d7-421f-a820-f748ea943c7c"
+  }
+}]]></component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="ghm33h0v" />
   </component>
@@ -85,6 +100,7 @@
       <workItem from="1716792932090" duration="173000" />
       <workItem from="1722519782836" duration="59780000" />
       <workItem from="1722900429720" duration="3903000" />
+      <workItem from="1722936815215" duration="2235000" />
     </task>
     <task id="LOCAL-00001" summary="debug">
       <option name="closed" value="true" />

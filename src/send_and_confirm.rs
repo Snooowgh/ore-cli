@@ -193,9 +193,10 @@ impl Miner {
     ) {
         let tips = *tips.read().await;
         let mut tip = self.priority_fee;
-        if tips.p50() > 0 {
-            tip = 30000.max(tips.p50() + 1);
-        }
+        tip = 10000.max(tips.p50() + 1);
+        // if tips.p50() > 0 {
+        //
+        // }
 
         let signer = self.signer();
         let client = self.rpc_client.clone();
