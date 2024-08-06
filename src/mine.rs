@@ -36,7 +36,7 @@ impl Miner {
         // Register, if needed.
         let signer = self.signer();
         self.open().await;
-        let min_difficulty:u32 = 11;
+        let min_difficulty:u32 = 12;
 
         // Check num threads
         self.check_num_cores(args.threads);
@@ -50,9 +50,9 @@ impl Miner {
             println!(
                 "\nhttps://solscan.io/account/{}\nBalance: {} ORE {} USD Difficulty: {}",
                 signer.pubkey().to_string(),
-                min_difficulty,
                 amount_u64_to_string(proof.balance),
-                amount_u64_to_f64(proof.balance) * 500.0
+                amount_u64_to_f64(proof.balance) * 500.0,
+                min_difficulty
             );
 
             // Calc cutoff time
