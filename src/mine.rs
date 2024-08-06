@@ -167,6 +167,9 @@ impl Miner {
         }
 
         // Update log
+        println!("Best hash: {} (difficulty: {})",
+                 bs58::encode(best_hash.h).into_string(),
+                 best_difficulty);
         progress_bar.finish_with_message(format!(
             "Best hash: {} (difficulty: {})",
             bs58::encode(best_hash.h).into_string(),

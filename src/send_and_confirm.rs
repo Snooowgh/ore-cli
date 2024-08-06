@@ -276,7 +276,7 @@ impl Miner {
         }
 
         if !landed_tx.is_empty() {
-            println!("OK !! Bundle mined: {}", bundle_id);
+            println!("OK !! Bundle mined: {} {}", bundle_id, tip);
             info!(
                     miner,
                     first_tx = ?landed_tx.first().unwrap(),
