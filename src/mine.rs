@@ -29,6 +29,8 @@ use crate::{
     jito::{subscribe_jito_tips, JitoTips},
     utils,
 };
+use crate::utils::amount_u64_to_f64;
+
 impl Miner {
     pub async fn mine(&self, args: MineArgs) {
         // Register, if needed.
@@ -48,7 +50,7 @@ impl Miner {
                 "\n{} Stake balance: {} ORE {} USD",
                 signer.pubkey().to_string(),
                 amount_u64_to_string(proof.balance),
-                proof.balance * 800
+                amount_u64_to_f64(proof.balance) * 800.0
             );
 
             // Calc cutoff time
