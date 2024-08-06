@@ -57,27 +57,27 @@ impl Miner {
         };
 
         // Confirm user wants to claim
-        if !ask_confirm(
-            format!(
-                "\nYou are about to claim {}.\n\nAre you sure you want to continue? [Y/n]",
-                format!(
-                    "{} ORE",
-                    amount_to_ui_amount(amount, ore_api::consts::TOKEN_DECIMALS)
-                )
-                .bold(),
-            )
-            .as_str(),
-        ) {
-            return;
-        }
+        // if !ask_confirm(
+        //     format!(
+        //         "\nYou are about to claim {}.\n\nAre you sure you want to continue? [Y/n]",
+        //         format!(
+        //             "{} ORE",
+        //             amount_to_ui_amount(amount, ore_api::consts::TOKEN_DECIMALS)
+        //         )
+        //         .bold(),
+        //     )
+        //     .as_str(),
+        // ) {
+        //     return;
+        // }
 
         // Send and confirm
         ixs.push(ore_api::instruction::claim(pubkey, beneficiary, amount));
 
         let tips = Arc::new(RwLock::new(JitoTips::default()));
         subscribe_jito_tips(tips.clone()).await;
-        println!("Jito Claiming... {}", tips.read().await);
-        self.send_and_confirm_by_jito(&ixs, ComputeBudget::Fixed(CU_LIMIT_CLAIM), tips.clone())
+        // println!("Jito Claiming... {}", tips.read().await);
+        self.send_and_confirm_by_jito(&ixs, ComputeBudget::Dynamic, tips.clone())
             .await;
         // self.send_and_confirm(&ixs, ComputeBudget::Fixed(CU_LIMIT_CLAIM), false)
         //     .await
@@ -106,9 +106,15 @@ impl Miner {
             &ore_api::consts::MINT_ADDRESS,
             &spl_token::id(),
         );
-        self.send_and_confirm(&[ix], ComputeBudget::Dynamic, false)
-            .await
-            .ok();
+
+        let tips = Arc::new(RwLock::new(JitoTips::default()));
+        subscribe_jito_tips(tips.clone()).await;
+        // println!("Jito Claiming... {}", tips.read().await);
+        self.send_and_confirm_by_jito(&[ix], ComputeBudget::Dynamic, tips.clone())
+            .await;
+        // self.send_and_confirm(&[ix], ComputeBudget::Dynamic, false)
+        //     .await
+        //     .ok();
 
         // Return token account address
         token_account_pubkey
