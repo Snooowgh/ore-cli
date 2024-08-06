@@ -193,7 +193,7 @@ impl Miner {
     ) {
         let tips = *tips.read().await;
         let mut tip = self.priority_fee;
-        tip = 10000.max(tips.p50() + 1);
+        tip = 15000.max(tips.p50() + 1);
         // if tips.p50() > 0 {
         //
         // }
