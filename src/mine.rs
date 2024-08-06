@@ -47,7 +47,7 @@ impl Miner {
             // Fetch proof
             let proof = get_proof_with_authority(&self.rpc_client, signer.pubkey()).await;
             println!(
-                "\n{} Stake balance: {} ORE {} USD",
+                "\nhttps://solscan.io/account/{}\nBalance: {} ORE {} USD",
                 signer.pubkey().to_string(),
                 amount_u64_to_string(proof.balance),
                 amount_u64_to_f64(proof.balance) * 800.0
