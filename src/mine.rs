@@ -36,6 +36,7 @@ impl Miner {
         // Register, if needed.
         let signer = self.signer();
         self.open().await;
+        let min_difficulty:u32 = 15;
 
         // Check num threads
         self.check_num_cores(args.threads);
@@ -47,8 +48,9 @@ impl Miner {
             // Fetch proof
             let proof = get_proof_with_authority(&self.rpc_client, signer.pubkey()).await;
             println!(
-                "\nhttps://solscan.io/account/{}\nBalance: {} ORE {} USD",
+                "\nhttps://solscan.io/account/{}\nBalance: {} ORE {} USD Difficulty: {}",
                 signer.pubkey().to_string(),
+                min_difficulty,
                 amount_u64_to_string(proof.balance),
                 amount_u64_to_f64(proof.balance) * 500.0
             );
@@ -62,7 +64,7 @@ impl Miner {
                 proof,
                 cutoff_time,
                 args.threads,
-                15,
+                min_difficulty,
             )
             .await;
 
