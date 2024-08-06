@@ -194,7 +194,7 @@ impl Miner {
         let tips = *tips.read().await;
         let mut tip = self.priority_fee;
         if tips.p50() > 0 {
-            tip = 1.max(tips.p50() + 1);
+            tip = 10000.max(tips.p50() + 1);
         }
 
         let signer = self.signer();
@@ -282,7 +282,7 @@ impl Miner {
                     "bundle mined",
                 );
         } else {
-            println!("Error !! Bundle dropped: {}", bundle_id);
+            println!("Error !! Bundle dropped: {} {}", bundle_id, tip);
             warn!(
                     miner,
                     tip,
