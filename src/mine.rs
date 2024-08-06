@@ -50,7 +50,7 @@ impl Miner {
                 "\nhttps://solscan.io/account/{}\nBalance: {} ORE {} USD",
                 signer.pubkey().to_string(),
                 amount_u64_to_string(proof.balance),
-                amount_u64_to_f64(proof.balance) * 800.0
+                amount_u64_to_f64(proof.balance) * 500.0
             );
 
             // Calc cutoff time
