@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::time::Duration;
 
 use colored::*;
@@ -17,8 +18,10 @@ use solana_sdk::{
     transaction::Transaction,
 };
 use solana_transaction_status::{TransactionConfirmationStatus, UiTransactionEncoding};
-
-use crate::Miner;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info, warn};
+use crate::jito::JitoTips;
+use crate::{constant, format_duration, format_reward, jito, Miner, utils};
 
 const MIN_SOL_BALANCE: f64 = 0.005;
 
@@ -41,6 +44,7 @@ impl Miner {
         ixs: &[Instruction],
         compute_budget: ComputeBudget,
         skip_confirm: bool,
+        tips: Arc<RwLock<JitoTips>>
     ) -> ClientResult<Signature> {
         let progress_bar = spinner::new_progress_bar();
         let signer = self.signer();
