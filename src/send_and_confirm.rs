@@ -274,18 +274,18 @@ impl Miner {
         }
 
         if !landed_tx.is_empty() {
-            println!("OK !! Bundle mined: {} {}", bundle_id, tip);
+            println!("OK !! Bundle mined: {} {} {}", bundle_tipper.to_string(), bundle_id, tip);
             info!(
                     miner,
                     first_tx = ?landed_tx.first().unwrap(),
                     "bundle mined",
                 );
         } else {
-            println!("Error !! Bundle dropped: {} {}", bundle_id, tip);
+            println!("Error !! Bundle dropped: {} {} {}", bundle_tipper.to_string(),bundle_id, tip);
             warn!(
                     miner,
                     tip,
-                    %tips,
+                    %tip,
                     "bundle dropped"
                 );
         }
