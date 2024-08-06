@@ -221,7 +221,7 @@ impl Miner {
         ));
         final_ixs.extend_from_slice(ixs);
 
-        let miner = signer.pubkey();
+        let miner = signer.pubkey().to_string();
         let bundle_tipper = signer.pubkey();
         ixs.push(jito::build_bribe_ix(&bundle_tipper, tip));
 
