@@ -178,6 +178,111 @@ impl Miner {
         }
     }
 
+    pub async fn send_and_confirm_by_jito(
+        &self,
+        ixs: &[Instruction],
+        compute_budget: ComputeBudget,
+        tips: Arc<RwLock<JitoTips>>,
+    ) -> ClientResult<Signature> {
+        let tips = *tips.read().await;
+        let mut tip = self.priority_fee;
+        if tips.p50() > 0 {
+            tip = 30000.max(tips.p50() + 1);
+        }
+
+        let signer = self.signer();
+        let client = self.rpc_client.clone();
+
+        // Return error, if balance is zero
+        if let Ok(balance) = client.get_balance(&signer.pubkey()).await {
+            if balance <= sol_to_lamports(MIN_SOL_BALANCE) {
+                panic!(
+                    "{} Insufficient balance: {} SOL\nPlease top up with at least {} SOL",
+                    "ERROR".bold().red(),
+                    lamports_to_sol(balance),
+                    MIN_SOL_BALANCE
+                );
+            }
+        }
+
+        // Set compute units
+        let mut final_ixs = vec![];
+        match compute_budget {
+            ComputeBudget::Dynamic => {
+                // TODO simulate
+                final_ixs.push(ComputeBudgetInstruction::set_compute_unit_limit(1_400_000))
+            }
+            ComputeBudget::Fixed(cus) => {
+                final_ixs.push(ComputeBudgetInstruction::set_compute_unit_limit(cus))
+            }
+        }
+        final_ixs.push(ComputeBudgetInstruction::set_compute_unit_price(
+            self.priority_fee,
+        ));
+        final_ixs.extend_from_slice(ixs);
+
+        let miner = signer.pubkey();
+        let bundle_tipper = signer.pubkey();
+        ixs.push(jito::build_bribe_ix(&bundle_tipper, tip));
+
+        let mut tx = Transaction::new_with_payer(&final_ixs, Some(&signer.pubkey()));
+        // Sign tx
+        let (hash, _slot) = client
+            .get_latest_blockhash_with_commitment(self.rpc_client.commitment())
+            .await
+            .unwrap();
+        let mut send_at_slot = _slot;
+        let mut latest_slot = _slot;
+        let mut landed_tx = vec![];
+
+        tx.sign(&[&signer], hash);
+        let mut bundle = Vec::with_capacity(5);
+        bundle.push(tx);
+        let task = tokio::spawn(async move { jito::send_bundle(bundle).await });
+
+        let (signature, bundle_id) = match task.await.unwrap() {
+            Ok(r) => r,
+            Err(err) => {
+                error!(miner, "fail to send bundle: {err:#}");
+            }
+        };
+
+        let mut signatures = vec![];
+        signatures.push(signature);
+
+        while landed_tx.is_empty() && latest_slot < send_at_slot + constant::SLOT_EXPIRATION {
+            tokio::time::sleep(Duration::from_secs(2)).await;
+            debug!(miner, latest_slot, send_at_slot, "checking bundle status");
+            let (statuses, slot) = match Self::get_signature_statuses(&client, &signatures).await {
+                Ok(value) => value,
+                Err(err) => {
+                    error!(miner, latest_slot, send_at_slot, "fail to get bundle status: {err:#}");
+                    tokio::time::sleep(Duration::from_secs(2)).await;
+                    continue;
+                }
+            };
+
+            latest_slot = slot;
+            landed_tx = utils::find_landed_txs(&signatures, statuses);
+        }
+
+        if !landed_tx.is_empty() {
+            info!(
+                    miner,
+                    first_tx = ?landed_tx.first().unwrap(),
+                    "bundle mined",
+                );
+        } else {
+            warn!(
+                    miner,
+                    tip,
+                    %tips,
+                    "bundle dropped"
+                );
+        }
+    }
+
+
     // TODO
     fn _simulate(&self) {
 
