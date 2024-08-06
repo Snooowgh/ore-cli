@@ -94,7 +94,7 @@ impl Miner {
             } else if (best_difficulty >= 16) {
                 tip = 35000.max(tips.p50() + 1);
             } else {
-                tip = 20000.max(tips.p50() + 1);
+                tip = 25000.max(tips.p50() + 1);
             }
 
             self.send_and_confirm_by_jito(&ixs, ComputeBudget::Fixed(compute_budget), tip)
